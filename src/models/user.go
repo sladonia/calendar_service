@@ -8,6 +8,11 @@ import (
 )
 
 type UserInterface interface {
+	Validate() error
+	Create(db *gorm.DB) error
+	Delete(db *gorm.DB) error
+	Update(db *gorm.DB) error
+	Read(db *gorm.DB) error
 }
 
 type User struct {
@@ -39,5 +44,33 @@ func (u *User) Validate() error {
 }
 
 func (u *User) Create(db *gorm.DB) error {
-	return db.Create(u).Error
+	if err := u.Validate(); err != nil {
+		return err
+	}
+	err := db.Create(u).Error
+	return err
+}
+
+func (u *User) Delete(db *gorm.DB) error {
+	if u.EmptyID() {
+		return EmptyIdError
+	}
+	return db.Delete(u).Error
+}
+
+func (u *User) Update(db *gorm.DB) error {
+	if err := u.Validate(); err != nil {
+		return err
+	}
+	if u.EmptyID() {
+		return EmptyIdError
+	}
+	return db.Save(u).Error
+}
+
+func (u *User) Read(db *gorm.DB) error {
+	if u.EmptyID() {
+		return EmptyIdError
+	}
+	return db.Find(u, "id = ?", u.ID).Error
 }

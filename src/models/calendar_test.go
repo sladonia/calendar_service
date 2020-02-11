@@ -20,15 +20,6 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	RecreateTables(db)
+	InitIndexes(db)
 	os.Exit(m.Run())
 }
-
-//func TestUser_Validate(t *testing.T) {
-//	validUser := User{
-//		FirstName: "Jorge",
-//		LastName:  "TheGreat",
-//		Email:     "gorge@gmail.com",
-//	}
-//	err := validUser.Validate()
-//	assert.Nil(t, err)
-//}

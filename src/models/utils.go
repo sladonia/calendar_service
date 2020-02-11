@@ -21,3 +21,11 @@ func RecreateTables(db *gorm.DB) {
 	db.DropTableIfExists(&User{})
 	db.CreateTable(&User{})
 }
+
+func InitIndexes(db *gorm.DB) {
+	db.Model(&User{}).AddUniqueIndex("idx_user_first_last_name_unique", "first_name", "last_name")
+}
+
+func DropAllData(db *gorm.DB) {
+	db.Where("true").Delete(&User{})
+}

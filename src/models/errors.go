@@ -5,7 +5,10 @@ import (
 	"fmt"
 )
 
-var BasicModelError = errors.New("model error")
+var (
+	BasicModelError = errors.New("model error")
+	EmptyIdError = NewModeError("unable to delete user. id should be provided")
+)
 
 type ModelError struct {
 	Msg string
