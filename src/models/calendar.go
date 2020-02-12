@@ -1,15 +1,15 @@
 package models
 
 import (
+	"fmt"
 	"github.com/jinzhu/gorm"
-	uuid "github.com/satori/go.uuid"
 	"strings"
 )
 
 type Calendar struct {
 	Base
-	Name   string    `gorm:"unique_index"`
-	UserId uuid.UUID `gorm:"not null"`
+	Name   string `gorm:"unique_index;not null"`
+	UserId string `sql:"type:uuid" gorm:"not null;foreignkey:UserRefer"`
 }
 
 func (c *Calendar) Validate() error {
@@ -27,5 +27,50 @@ func (c *Calendar) Create(db *gorm.DB) error {
 	if err := c.Validate(); err != nil {
 		return err
 	}
-	return db.Create(c).Error
+	return db.Debug().Create(c).Error
+}
+
+func (c *Calendar) Delete(db *gorm.DB) error {
+	if c.EmptyID() {
+		return EmptyIdError
+	}
+	dbState := db.Delete(c)
+	if dbState.Error != nil {
+		return dbState.Error
+	}
+	if dbState.RowsAffected == 0 {
+		return NewModeError(fmt.Sprintf("calendar with id=%s not present in the db", c.ID))
+	}
+	return nil
+}
+
+func (c *Calendar) Update(db *gorm.DB) error {
+	if err := c.Validate(); err != nil {
+		return err
+	}
+	if c.EmptyID() {
+		return EmptyIdError
+	}
+	dbState := db.Model(&Calendar{}).Updates(c)
+	if dbState.Error != nil {
+		return dbState.Error
+	}
+	if dbState.RowsAffected == 0 {
+		return NewModeError(fmt.Sprintf("calendar with id=%s not present in the db", c.ID))
+	}
+	return nil
+}
+
+func (c *Calendar) Read(db *gorm.DB) error {
+	if c.EmptyID() {
+		return EmptyIdError
+	}
+	dbState :=db.Find(c, "id = ?", c.ID)
+	if dbState.Error != nil {
+		return dbState.Error
+	}
+	if dbState.RowsAffected == 0 {
+		return NewModeError(fmt.Sprintf("calendar with id=%s not present in the db", c.ID))
+	}
+	return nil
 }

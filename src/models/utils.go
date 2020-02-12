@@ -26,6 +26,7 @@ func RecreateTables(db *gorm.DB) {
 
 func InitIndexes(db *gorm.DB) {
 	db.Model(&User{}).AddUniqueIndex("idx_user_first_last_name_unique", "first_name", "last_name")
+	db.Model(&Calendar{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
 }
 
 func DropAllData(db *gorm.DB) {

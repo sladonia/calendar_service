@@ -16,7 +16,7 @@ type UserInterface interface {
 }
 
 type User struct {
-	Base
+	Base      `gorm:"embedded"`
 	FirstName string `sql:"not null"`
 	LastName  string `sql:"not null"`
 	Email     string `sql:"unique_index; not null"`
@@ -55,7 +55,14 @@ func (u *User) Delete(db *gorm.DB) error {
 	if u.EmptyID() {
 		return EmptyIdError
 	}
-	return db.Delete(u).Error
+	dbState := db.Delete(u)
+	if dbState.Error != nil {
+		return nil
+	}
+	if dbState.RowsAffected == 0 {
+		return NewModeError(fmt.Sprintf("user with id=%s not present in the db", u.ID))
+	}
+	return nil
 }
 
 func (u *User) Update(db *gorm.DB) error {
@@ -65,12 +72,26 @@ func (u *User) Update(db *gorm.DB) error {
 	if u.EmptyID() {
 		return EmptyIdError
 	}
-	return db.Save(u).Error
+	dbState := db.Model(&User{}).Updates(u)
+	if dbState.Error != nil {
+		return dbState.Error
+	}
+	if dbState.RowsAffected == 0 {
+		return NewModeError(fmt.Sprintf("user with id=%s not present in the db", u.ID))
+	}
+	return nil
 }
 
 func (u *User) Read(db *gorm.DB) error {
 	if u.EmptyID() {
 		return EmptyIdError
 	}
-	return db.Find(u, "id = ?", u.ID).Error
+	dbState := db.Find(u, "id = ?", u.ID)
+	if dbState.Error != nil {
+		return dbState.Error
+	}
+	if dbState.RowsAffected == 0 {
+		return NewModeError(fmt.Sprintf("user with id=%s not present in the db", u.ID))
+	}
+	return nil
 }
