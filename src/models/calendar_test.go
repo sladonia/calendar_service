@@ -26,7 +26,6 @@ func TestMain(m *testing.M) {
 
 func TestCalendar_Create(t *testing.T) {
 
-
 	err := MockDbData(db)
 	if err != nil {
 		t.Fatal("unable to mock db")
@@ -67,7 +66,7 @@ func TestCalendar_Create(t *testing.T) {
 			name: "fail user_id foreign key constraint",
 			fields: fields{
 				Name:   "bad calendar",
-				UserId: "12345678-1234-5678-1234-567812345678",
+				UserId: unexistingId,
 			},
 			args:    args{db: db},
 			wantErr: true,
@@ -110,7 +109,7 @@ func TestCalendar_Delete(t *testing.T) {
 			name: "fail empty id",
 			fields: fields{
 				Name:   "dfd",
-				UserId: "12345678-1234-5678-1234-567812345678",
+				UserId: unexistingId,
 			},
 			args:    args{db: db},
 			wantErr: true,
@@ -118,9 +117,9 @@ func TestCalendar_Delete(t *testing.T) {
 		{
 			name: "fail unexisting id",
 			fields: fields{
-				Base:   Base{ID: "12345678-1234-5678-1234-567812345678"},
+				Base:   Base{ID: unexistingId},
 				Name:   "dfd",
-				UserId: "12345678-1234-5678-1234-567812345678",
+				UserId: unexistingId,
 			},
 			args:    args{db: db},
 			wantErr: true,
@@ -199,6 +198,7 @@ func TestCalendar_Update(t *testing.T) {
 			args:    args{db: db},
 			wantErr: true,
 		},
+
 		{
 			name: "success",
 			fields: fields{

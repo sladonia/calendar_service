@@ -8,8 +8,8 @@ import (
 
 type Calendar struct {
 	Base
-	Name   string `gorm:"unique_index;not null"`
-	UserId string `sql:"type:uuid" gorm:"not null;foreignkey:UserRefer"`
+	Name string `gorm:"unique_index;not null"`
+	UserId string `sql:"type:uuid" gorm:"not null"`
 }
 
 func (c *Calendar) Validate() error {
@@ -65,7 +65,7 @@ func (c *Calendar) Read(db *gorm.DB) error {
 	if c.EmptyID() {
 		return EmptyIdError
 	}
-	dbState :=db.Find(c, "id = ?", c.ID)
+	dbState := db.Find(c, "id = ?", c.ID)
 	if dbState.Error != nil {
 		return dbState.Error
 	}

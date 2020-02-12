@@ -6,7 +6,6 @@ import (
 
 type Base struct {
 	ID string `sql:"type:uuid;primary_key;default:uuid_generate_v1()"`
-	//ID        uuid.UUID `sql:"type:uuid;primary_key;default:uuid_generate_v1()"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
