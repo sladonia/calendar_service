@@ -18,18 +18,22 @@ func InitDbConnection(user, password, dbname, sslmode string) (*gorm.DB, error) 
 }
 
 func RecreateTables(db *gorm.DB) {
+	db.DropTableIfExists("users_appointments")
 	db.DropTableIfExists(&Calendar{})
 	db.DropTableIfExists(&User{})
 	db.CreateTable(&User{})
 	db.CreateTable(&Calendar{})
+	db.CreateTable(&Appointment{})
 }
 
 func InitIndexes(db *gorm.DB) {
 	db.Model(&User{}).AddUniqueIndex("idx_user_first_last_name_unique", "first_name", "last_name")
 	db.Model(&Calendar{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	db.Model(&Calendar{}).AddForeignKey("calendar_id", "calendars(id)", "CASCADE", "CASCADE")
 }
 
 func DropAllData(db *gorm.DB) {
+	db.Where("true").Delete(&Appointment{})
 	db.Where("true").Delete(&Calendar{})
 	db.Where("true").Delete(&User{})
 }

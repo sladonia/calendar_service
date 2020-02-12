@@ -16,10 +16,11 @@ type UserInterface interface {
 }
 
 type User struct {
-	Base      `gorm:"embedded"`
-	FirstName string `sql:"not null"`
-	LastName  string `sql:"not null"`
-	Email     string `sql:"unique_index; not null"`
+	Base
+	FirstName    string        `sql:"not null"`
+	LastName     string        `sql:"not null"`
+	Email        string        `sql:"unique_index; not null"`
+	Appointments []Appointment `gorm:"many2many:users_appointments;"`
 }
 
 func (u *User) Validate() error {
