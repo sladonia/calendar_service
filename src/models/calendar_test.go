@@ -23,3 +23,35 @@ func TestMain(m *testing.M) {
 	InitIndexes(db)
 	os.Exit(m.Run())
 }
+
+func TestCalendar_Create(t *testing.T) {
+	_ = MockDbData(db)
+	//type fields struct {
+	//	Base   Base
+	//	Name   string
+	//	UserId uuid.UUID
+	//}
+	//type args struct {
+	//	db *gorm.DB
+	//}
+	//tests := []struct {
+	//	name    string
+	//	fields  fields
+	//	args    args
+	//	wantErr bool
+	//}{
+	//	// TODO: Add test cases.
+	//}
+	//for _, tt := range tests {
+	//	t.Run(tt.name, func(t *testing.T) {
+	//		c := &Calendar{
+	//			Base:   tt.fields.Base,
+	//			Name:   tt.fields.Name,
+	//			UserId: tt.fields.UserId,
+	//		}
+	//		if err := c.Create(tt.args.db); (err != nil) != tt.wantErr {
+	//			t.Errorf("Create() error = %v, wantErr %v", err, tt.wantErr)
+	//		}
+	//	})
+	//}
+}

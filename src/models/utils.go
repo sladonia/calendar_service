@@ -18,8 +18,10 @@ func InitDbConnection(user, password, dbname, sslmode string) (*gorm.DB, error) 
 }
 
 func RecreateTables(db *gorm.DB) {
+	db.DropTableIfExists(&Calendar{})
 	db.DropTableIfExists(&User{})
 	db.CreateTable(&User{})
+	db.CreateTable(&Calendar{})
 }
 
 func InitIndexes(db *gorm.DB) {
@@ -27,5 +29,6 @@ func InitIndexes(db *gorm.DB) {
 }
 
 func DropAllData(db *gorm.DB) {
+	db.Where("true").Delete(&Calendar{})
 	db.Where("true").Delete(&User{})
 }

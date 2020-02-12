@@ -18,3 +18,10 @@ func (b *Base) EmptyID() bool {
 	}
 	return false
 }
+
+func IdIsEmpty(id uuid.UUID) bool {
+	if id == [16]byte{} {
+		return true
+	}
+	return false
+}
