@@ -7,7 +7,7 @@ import (
 
 var (
 	BasicModelError = errors.New("model error")
-	EmptyIdError = NewModeError("unable to delete record. id should be provided")
+	EmptyIdError    = NewModeError("unable to delete record. id should be provided")
 )
 
 type ModelError struct {

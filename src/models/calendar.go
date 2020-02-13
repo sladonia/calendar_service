@@ -8,7 +8,7 @@ import (
 
 type Calendar struct {
 	Base
-	Name string `gorm:"unique_index;not null"`
+	Name   string `gorm:"unique_index;not null"`
 	UserId string `sql:"type:uuid" gorm:"not null"`
 }
 

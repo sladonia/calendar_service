@@ -5,7 +5,7 @@ import (
 )
 
 type Base struct {
-	ID string `sql:"type:uuid;primary_key;default:uuid_generate_v1()"`
+	ID        string `sql:"type:uuid;primary_key;default:uuid_generate_v1()"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

@@ -14,21 +14,6 @@ services:
       POSTGRES_USER: user
       POSTGRES_DB: postgres
 
-  postgres_test:
-    build: ./postgres/
-    restart: always
-    volumes:
-      - postgres_test_data:/var/lib/postgresql/data:rw
-    ports:
-      - 5433:5432
-    environment:
-      POSTGRES_PASSWORD: password
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_USER: user
-      POSTGRES_DB: postgres
-
 volumes:
   postgres_data:
-    driver: local
-  postgres_test_data:
     driver: local
