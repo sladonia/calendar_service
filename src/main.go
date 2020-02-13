@@ -5,7 +5,7 @@ import (
 	"calendar_service/src/controllers"
 	"calendar_service/src/datasources/postgres/calendardb"
 	"calendar_service/src/logger"
-	logging_middlewaer "calendar_service/src/middlewares/logging_middleware"
+	"calendar_service/src/middlewares/logging_middleware"
 	"calendar_service/src/models"
 	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
