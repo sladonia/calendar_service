@@ -5,6 +5,7 @@ import (
 	"calendar_service/src/controllers"
 	"calendar_service/src/datasources/postgres/calendardb"
 	"calendar_service/src/logger"
+	logging_middlewaer "calendar_service/src/middlewares/logging_middleware"
 	"calendar_service/src/models"
 	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -42,6 +43,8 @@ func main() {
 	r := mux.NewRouter()
 	r.NotFoundHandler = &controllers.NotFoundHandler{}
 	r.HandleFunc("/", controllers.RootController.Get)
+
+	r.Use(logging_middlewaer.LoggingMw)
 
 	srv := &http.Server{Addr: config.Config.Port, Handler: r}
 	logger.Logger.Infof("start listening on port %s", config.Config.Port)
