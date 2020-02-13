@@ -14,7 +14,7 @@ var (
 
 func TestMain(m *testing.M) {
 	var err error
-	db, err = InitDbConnection("user", "password", "calendar_test", "disable")
+	db, err = InitDbConnection("user", "password", "calendar_test", "disable", 25, 25, 5)
 	if err != nil {
 		fmt.Println("unable to connect to db", err)
 		os.Exit(1)

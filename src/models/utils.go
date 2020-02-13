@@ -3,17 +3,21 @@ package models
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"time"
 )
 
 var connectString = "user=user password=password dbname=calendar_development sslmode=disable"
 
-func InitDbConnection(user, password, dbname, sslmode string) (*gorm.DB, error) {
+func InitDbConnection(user, password, dbname, sslmode string, maxOpenConn, maxIdleConn, connTimeout int) (*gorm.DB, error) {
 	connectString := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s",
 		user, password, dbname, sslmode)
 	db, err := gorm.Open("postgres", connectString)
 	if err != nil {
 		return nil, err
 	}
+	db.DB().SetMaxOpenConns(maxOpenConn)
+	db.DB().SetMaxIdleConns(maxIdleConn)
+	db.DB().SetConnMaxLifetime(time.Duration(connTimeout) * time.Second)
 	return db, nil
 }
 
