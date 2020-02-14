@@ -1,6 +1,7 @@
 package models
 
 import (
+	"calendar_service/src/config"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -13,8 +14,19 @@ var (
 )
 
 func TestMain(m *testing.M) {
+	if err := config.Load(); err != nil {
+		fmt.Println("unable to load config", err)
+		os.Exit(1)
+	}
 	var err error
-	db, err = InitDbConnection("user", "password", "calendar_test", "disable", 25, 25, 5)
+	db, err = InitDbConnection(
+		config.Config.TestCalendarDb.User,
+		config.Config.TestCalendarDb.Password,
+		config.Config.TestCalendarDb.DbName,
+		config.Config.TestCalendarDb.SslMode,
+		config.Config.TestCalendarDb.MaxOpenConnections,
+		config.Config.TestCalendarDb.MaxIdleConnections,
+		config.Config.TestCalendarDb.ConnectionMaxLifetime)
 	if err != nil {
 		fmt.Println("unable to connect to db", err)
 		os.Exit(1)
@@ -25,7 +37,6 @@ func TestMain(m *testing.M) {
 }
 
 func TestCalendar_Create(t *testing.T) {
-
 	err := MockDbData(db)
 	if err != nil {
 		t.Fatal("unable to mock db")
@@ -57,7 +68,7 @@ func TestCalendar_Create(t *testing.T) {
 			name: "success",
 			fields: fields{
 				Name:   "bad calendar",
-				UserId: knownUserId,
+				UserId: KnownUserId,
 			},
 			args:    args{db: db},
 			wantErr: false,
@@ -66,7 +77,7 @@ func TestCalendar_Create(t *testing.T) {
 			name: "fail user_id foreign key constraint",
 			fields: fields{
 				Name:   "bad calendar",
-				UserId: unexistingId,
+				UserId: UnexistingId,
 			},
 			args:    args{db: db},
 			wantErr: true,
@@ -109,7 +120,7 @@ func TestCalendar_Delete(t *testing.T) {
 			name: "fail empty id",
 			fields: fields{
 				Name:   "dfd",
-				UserId: unexistingId,
+				UserId: UnexistingId,
 			},
 			args:    args{db: db},
 			wantErr: true,
@@ -117,9 +128,9 @@ func TestCalendar_Delete(t *testing.T) {
 		{
 			name: "fail unexisting id",
 			fields: fields{
-				Base:   Base{ID: unexistingId},
+				Base:   Base{ID: UnexistingId},
 				Name:   "dfd",
-				UserId: unexistingId,
+				UserId: UnexistingId,
 			},
 			args:    args{db: db},
 			wantErr: true,
@@ -129,7 +140,7 @@ func TestCalendar_Delete(t *testing.T) {
 			fields: fields{
 				Base:   Base{ID: knownCalendarId},
 				Name:   "dfd",
-				UserId: knownUserId,
+				UserId: KnownUserId,
 			},
 			args:    args{db: db},
 			wantErr: false,
@@ -173,7 +184,7 @@ func TestCalendar_Update(t *testing.T) {
 			name: "fail no calendar id",
 			fields: fields{
 				Name:   "cavabunga",
-				UserId: knownUserId,
+				UserId: KnownUserId,
 			},
 			args:    args{db: db},
 			wantErr: true,
@@ -181,9 +192,9 @@ func TestCalendar_Update(t *testing.T) {
 		{
 			name: "fail unexisting calendar id",
 			fields: fields{
-				Base:   Base{ID: unexistingId},
+				Base:   Base{ID: UnexistingId},
 				Name:   "cavabunga",
-				UserId: knownUserId,
+				UserId: KnownUserId,
 			},
 			args:    args{db: db},
 			wantErr: true,
@@ -193,7 +204,7 @@ func TestCalendar_Update(t *testing.T) {
 			fields: fields{
 				Base:   Base{ID: knownCalendarId},
 				Name:   "cavabunga",
-				UserId: unexistingId,
+				UserId: UnexistingId,
 			},
 			args:    args{db: db},
 			wantErr: true,
@@ -204,7 +215,7 @@ func TestCalendar_Update(t *testing.T) {
 			fields: fields{
 				Base:   Base{ID: knownCalendarId},
 				Name:   "cavabunga",
-				UserId: knownUserId,
+				UserId: KnownUserId,
 			},
 			args:    args{db: db},
 			wantErr: false,
@@ -247,7 +258,7 @@ func TestCalendar_Read(t *testing.T) {
 		{
 			name: "fail no such calendar",
 			fields: fields{
-				Base: Base{ID: unexistingId},
+				Base: Base{ID: UnexistingId},
 			},
 			args:    args{db: db},
 			wantErr: true,

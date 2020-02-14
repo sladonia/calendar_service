@@ -221,7 +221,7 @@ func TestAppointment_Delete(t *testing.T) {
 		},
 		{
 			name:    "failure unexisting id",
-			fields:  fields{Base: Base{ID: unexistingId}},
+			fields:  fields{Base: Base{ID: UnexistingId}},
 			args:    args{db: db},
 			wantErr: true,
 		},
@@ -351,7 +351,7 @@ func TestAppointment_Read(t *testing.T) {
 		},
 		{
 			name:    "failure unexisting id",
-			fields:  fields{Base: Base{ID: unexistingId}},
+			fields:  fields{Base: Base{ID: UnexistingId}},
 			args:    args{db: db},
 			wantErr: true,
 		},

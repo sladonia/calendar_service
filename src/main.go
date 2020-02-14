@@ -43,6 +43,11 @@ func main() {
 	r := mux.NewRouter()
 	r.NotFoundHandler = &controllers.NotFoundHandler{}
 	r.HandleFunc("/", controllers.RootController.Get)
+	// user
+	r.HandleFunc("/user", controllers.UserController.Create).Methods("POST")
+	r.HandleFunc("/user/{id}", controllers.UserController.Read).Methods("GET")
+	r.HandleFunc("/user/{id}", controllers.UserController.Delete).Methods("DELETE")
+	r.HandleFunc("/user/{id}", controllers.UserController.Update).Methods("POST")
 
 	r.Use(logging_middlewaer.LoggingMw)
 

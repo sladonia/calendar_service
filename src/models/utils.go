@@ -18,6 +18,7 @@ func InitDbConnection(user, password, dbname, sslmode string, maxOpenConn, maxId
 	db.DB().SetMaxOpenConns(maxOpenConn)
 	db.DB().SetMaxIdleConns(maxIdleConn)
 	db.DB().SetConnMaxLifetime(time.Duration(connTimeout) * time.Second)
+	db.LogMode(false)
 	return db, nil
 }
 
