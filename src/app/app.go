@@ -33,6 +33,7 @@ func ConfigureApp() error {
 	if err != nil {
 		return err
 	}
+	calendardb.DB.LogMode(false)
 	return nil
 }
 
@@ -46,6 +47,7 @@ func InitApp() http.Handler {
 	r.HandleFunc("/user/{id}", controllers.UserController.Read).Methods("GET")
 	r.HandleFunc("/user/{id}", controllers.UserController.Delete).Methods("DELETE")
 	r.HandleFunc("/user/{id}", controllers.UserController.Update).Methods("POST")
+	r.HandleFunc("/user/{user_id}/calendar", controllers.CalendarController.Create).Methods("POST")
 
 	r.Use(logging_middlewaer.LoggingMw)
 

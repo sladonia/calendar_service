@@ -11,7 +11,7 @@ type Appointment struct {
 	Base
 	Subject     string `gorm:"index;not null"`
 	Description string
-	CalendarId  string `sql:"type:uuid" gorm:"not null"`
+	CalendarId  string `gorm:"type:uuid;not null;" json:"-"`
 	Start       time.Time
 	End         time.Time
 	WholeDay    bool

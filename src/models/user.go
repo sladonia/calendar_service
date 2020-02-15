@@ -21,6 +21,7 @@ type User struct {
 	LastName     string        `sql:"not null" json:"last_name"`
 	Email        string        `sql:"unique_index; not null" json:"email"`
 	Appointments []Appointment `gorm:"many2many:users_appointments;" json:"appointments"`
+	Calendars    []Calendar    `json:"calendars"`
 }
 
 func (u *User) Validate() error {
@@ -90,7 +91,7 @@ func (u *User) Read(db *gorm.DB) error {
 	if u.EmptyID() {
 		return EmptyIdError
 	}
-	dbState := db.Find(u, "id = ?", u.ID)
+	dbState := db.Preload("Calendars").Find(u, "id = ?", u.ID)
 	if dbState.Error != nil {
 		return dbState.Error
 	}

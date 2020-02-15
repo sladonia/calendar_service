@@ -1,4 +1,4 @@
-package end_to_end_tests
+package tests
 
 import (
 	"calendar_service/src/controllers"
