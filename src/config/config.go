@@ -5,12 +5,11 @@ import "github.com/jinzhu/configor"
 var Config Configuration
 
 type Configuration struct {
-	ServiceName    string `env:"SERVICE_NAME" default:"calendar"`
-	Env            string `env:"ENV" default:"dev"`
-	LogLevel       string `env:"LOG_LEVEL" default:"debug"`
-	Port           string `env:"PORT" default:":8080"`
-	CalendarDb     CalendarDb
-	TestCalendarDb TestCalendarDb
+	ServiceName string `env:"SERVICE_NAME" default:"calendar"`
+	Env         string `env:"ENV" default:"dev"`
+	LogLevel    string `env:"LOG_LEVEL" default:"debug"`
+	Port        string `env:"PORT" default:":8080"`
+	CalendarDb  CalendarDb
 }
 
 type CalendarDb struct {
@@ -23,18 +22,6 @@ type CalendarDb struct {
 	MaxOpenConnections    int    `env:"POSTGRES_MAX_OPEN_CONNECTIONS" default:"25"`
 	MaxIdleConnections    int    `env:"POSTGRES_MAX_IDLE_CONNECTIONS" default:"25"`
 	ConnectionMaxLifetime int    `env:"POSTGRES_CONNECTION_MAX_LIFETIME" default:"5"`
-}
-
-type TestCalendarDb struct {
-	Host                  string `env:"TEST_POSTGRES_HOST" default:"localhost"`
-	Port                  string `env:"TEST_POSTGRES_PORT" default:"5432"`
-	DbName                string `env:"TEST_POSTGRES_DB" default:"calendar_test"`
-	User                  string `env:"TEST_POSTGRES_USER" default:"user"`
-	Password              string `env:"TEST_POSTGRES_PASSWORD" default:"password"`
-	SslMode               string `env:"TEST_POSTGRES_SSL_MODE" default:"disable"`
-	MaxOpenConnections    int    `env:"TEST_POSTGRES_MAX_OPEN_CONNECTIONS" default:"25"`
-	MaxIdleConnections    int    `env:"TEST_POSTGRES_MAX_IDLE_CONNECTIONS" default:"25"`
-	ConnectionMaxLifetime int    `env:"TEST_POSTGRES_CONNECTION_MAX_LIFETIME" default:"5"`
 }
 
 func Load() error {

@@ -1,40 +1,9 @@
 package models
 
 import (
-	"calendar_service/src/config"
-	"fmt"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"os"
 	"testing"
 )
-
-var (
-	db *gorm.DB
-)
-
-func TestMain(m *testing.M) {
-	if err := config.Load(); err != nil {
-		fmt.Println("unable to load config", err)
-		os.Exit(1)
-	}
-	var err error
-	db, err = InitDbConnection(
-		config.Config.TestCalendarDb.User,
-		config.Config.TestCalendarDb.Password,
-		config.Config.TestCalendarDb.DbName,
-		config.Config.TestCalendarDb.SslMode,
-		config.Config.TestCalendarDb.MaxOpenConnections,
-		config.Config.TestCalendarDb.MaxIdleConnections,
-		config.Config.TestCalendarDb.ConnectionMaxLifetime)
-	if err != nil {
-		fmt.Println("unable to connect to db", err)
-		os.Exit(1)
-	}
-	RecreateTables(db)
-	InitIndexes(db)
-	os.Exit(m.Run())
-}
 
 func TestCalendar_Create(t *testing.T) {
 	err := MockDbData(db)

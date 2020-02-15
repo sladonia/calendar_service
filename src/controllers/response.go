@@ -11,7 +11,7 @@ func RespondJSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func RespondError(w http.ResponseWriter, err ApiError) {
+func RespondError(w http.ResponseWriter, err ApiErrorInterface) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(err.GetStatusCode())
 	json.NewEncoder(w).Encode(err)

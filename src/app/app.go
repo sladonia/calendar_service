@@ -1,0 +1,53 @@
+package app
+
+import (
+	"calendar_service/src/config"
+	"calendar_service/src/controllers"
+	"calendar_service/src/datasources/postgres/calendardb"
+	"calendar_service/src/logger"
+	"calendar_service/src/middlewares/logging_middleware"
+	"calendar_service/src/models"
+	"github.com/gorilla/mux"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"net/http"
+)
+
+func ConfigureApp() error {
+	if err := config.Load(); err != nil {
+		return err
+	}
+	if err := logger.InitLogger(config.Config.ServiceName, config.Config.LogLevel); err != nil {
+		return err
+	}
+
+	var err error
+	calendardb.DB, err = models.InitDbConnection(
+		config.Config.CalendarDb.User,
+		config.Config.CalendarDb.Password,
+		config.Config.CalendarDb.DbName,
+		config.Config.CalendarDb.SslMode,
+		config.Config.CalendarDb.MaxOpenConnections,
+		config.Config.CalendarDb.MaxIdleConnections,
+		config.Config.CalendarDb.ConnectionMaxLifetime,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func InitApp() http.Handler {
+	r := mux.NewRouter()
+	r.NotFoundHandler = &controllers.NotFoundHandler{}
+	r.HandleFunc("/", controllers.RootController.Get)
+
+	// user
+	r.HandleFunc("/user", controllers.UserController.Create).Methods("POST")
+	r.HandleFunc("/user/{id}", controllers.UserController.Read).Methods("GET")
+	r.HandleFunc("/user/{id}", controllers.UserController.Delete).Methods("DELETE")
+	r.HandleFunc("/user/{id}", controllers.UserController.Update).Methods("POST")
+
+	r.Use(logging_middlewaer.LoggingMw)
+
+	return r
+}
