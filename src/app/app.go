@@ -51,6 +51,10 @@ func InitApp() http.Handler {
 	r.HandleFunc("/calendar/{calendar_id}", controllers.CalendarController.Read).Methods("GET")
 	r.HandleFunc("/calendar/{calendar_id}", controllers.CalendarController.Update).Methods("POST")
 	r.HandleFunc("/calendar/{calendar_id}", controllers.CalendarController.Delete).Methods("DELETE")
+	r.HandleFunc("/calendar/{calendar_id}/appointment", controllers.AppointmentController.Create).Methods("POST")
+	r.HandleFunc("/appointment/{appointment_id}", controllers.AppointmentController.Read).Methods("GET")
+	r.HandleFunc("/appointment/{appointment_id}", controllers.AppointmentController.Update).Methods("POST")
+	r.HandleFunc("/appointment/{appointment_id}", controllers.AppointmentController.Delete).Methods("DELETE")
 
 	r.Use(logging_middlewaer.LoggingMw)
 

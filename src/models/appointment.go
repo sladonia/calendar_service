@@ -9,13 +9,27 @@ import (
 
 type Appointment struct {
 	Base
-	Subject     string `gorm:"index;not null"`
-	Description string
-	CalendarId  string `gorm:"type:uuid;not null;" json:"-"`
-	Start       time.Time
-	End         time.Time
-	WholeDay    bool
-	Users       []User `gorm:"many2many:users_appointments;"`
+	Subject     string    `gorm:"index;not null" json:"subject"`
+	Description string    `json:"description"`
+	WholeDay    bool      `json:"whole_day"`
+	Start       time.Time `json:"start"`
+	End         time.Time `json:"end"`
+	Users       []User    `gorm:"many2many:users_appointments;" json:"users"`
+	CalendarId  string    `gorm:"type:uuid;not null;" json:"calendar_id"`
+}
+
+func (a *Appointment) AfterFind() (err error) {
+	if a.Users == nil {
+		a.Users = []User{}
+	}
+	return
+}
+
+func (a *Appointment) AfterUpdate() (err error) {
+	if a.Users == nil {
+		a.Users = []User{}
+	}
+	return
 }
 
 func (a *Appointment) validateTime() error {
@@ -80,6 +94,9 @@ func (a *Appointment) Update(db *gorm.DB) error {
 	}
 	if dbState.RowsAffected == 0 {
 		return NewModeError(fmt.Sprintf("appointment with id=%s not present in the db", a.ID))
+	}
+	if a.Users == nil {
+		a.Users = []User{}
 	}
 	return nil
 }
