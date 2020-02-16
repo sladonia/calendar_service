@@ -107,7 +107,7 @@ func TestCalendar_Delete(t *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				Base:   Base{ID: knownCalendarId},
+				Base:   Base{ID: KnownCalendarId},
 				Name:   "dfd",
 				UserId: KnownUserId,
 			},
@@ -171,7 +171,7 @@ func TestCalendar_Update(t *testing.T) {
 		{
 			name: "fail unexisting user_id",
 			fields: fields{
-				Base:   Base{ID: knownCalendarId},
+				Base:   Base{ID: KnownCalendarId},
 				Name:   "cavabunga",
 				UserId: UnexistingId,
 			},
@@ -182,7 +182,7 @@ func TestCalendar_Update(t *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				Base:   Base{ID: knownCalendarId},
+				Base:   Base{ID: KnownCalendarId},
 				Name:   "cavabunga",
 				UserId: KnownUserId,
 			},
@@ -235,7 +235,7 @@ func TestCalendar_Read(t *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				Base: Base{ID: knownCalendarId},
+				Base: Base{ID: KnownCalendarId},
 			},
 			args:    args{db: db},
 			wantErr: false,

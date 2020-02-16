@@ -8,9 +8,16 @@ import (
 
 type Calendar struct {
 	Base
-	Name         string        `gorm:"unique_index;not null" json:"name"`
-	UserId       string        `gorm:"type:uuid;not null;" json:"-"`
-	Appointments []Appointment `json:"appointments"`
+	Name         string         `gorm:"unique_index;not null" json:"name"`
+	UserId       string         `gorm:"type:uuid;not null;" json:"user_id"`
+	Appointments []*Appointment `json:"appointments"`
+}
+
+func (c *Calendar) AfterFind() (err error) {
+	if c.Appointments == nil {
+		c.Appointments = []*Appointment{}
+	}
+	return
 }
 
 func (c *Calendar) Validate() error {
@@ -59,6 +66,9 @@ func (c *Calendar) Update(db *gorm.DB) error {
 	if dbState.RowsAffected == 0 {
 		return NewModeError(fmt.Sprintf("calendar with id=%s not present in the db", c.ID))
 	}
+	//if c.Appointments == nil {
+	//	c.Appointments = []*Appointment{}
+	//}
 	return nil
 }
 
@@ -73,8 +83,8 @@ func (c *Calendar) Read(db *gorm.DB) error {
 	if dbState.RowsAffected == 0 {
 		return NewModeError(fmt.Sprintf("calendar with id=%s not present in the db", c.ID))
 	}
-	if c.Appointments == nil {
-		c.Appointments = []Appointment{}
-	}
+	//if c.Appointments == nil {
+	//	c.Appointments = []*Appointment{}
+	//}
 	return nil
 }

@@ -17,11 +17,21 @@ type UserInterface interface {
 
 type User struct {
 	Base
-	FirstName    string        `sql:"not null" json:"first_name"`
-	LastName     string        `sql:"not null" json:"last_name"`
-	Email        string        `sql:"unique_index; not null" json:"email"`
-	Appointments []Appointment `gorm:"many2many:users_appointments;" json:"appointments"`
-	Calendars    []Calendar    `json:"calendars"`
+	FirstName    string         `sql:"not null" json:"first_name"`
+	LastName     string         `sql:"not null" json:"last_name"`
+	Email        string         `sql:"unique_index; not null" json:"email"`
+	Appointments []*Appointment `gorm:"many2many:users_appointments;" json:"appointments"`
+	Calendars    []*Calendar    `json:"calendars"`
+}
+
+func (u *User) AfterFind() (err error) {
+	if u.Calendars == nil {
+		u.Calendars = []*Calendar{}
+	}
+	if u.Appointments == nil {
+		u.Appointments = []*Appointment{}
+	}
+	return
 }
 
 func (u *User) Validate() error {
@@ -81,9 +91,9 @@ func (u *User) Update(db *gorm.DB) error {
 	if dbState.RowsAffected == 0 {
 		return NewModeError(fmt.Sprintf("user with id=%s not present in the db", u.ID))
 	}
-	if u.Appointments == nil {
-		u.Appointments = []Appointment{}
-	}
+	//if u.Appointments == nil {
+	//	u.Appointments = []*Appointment{}
+	//}
 	return nil
 }
 
@@ -99,7 +109,12 @@ func (u *User) Read(db *gorm.DB) error {
 		return NewModeError(fmt.Sprintf("user with id=%s not present in the db", u.ID))
 	}
 	if u.Appointments == nil {
-		u.Appointments = []Appointment{}
+		u.Appointments = []*Appointment{}
 	}
+	//for _, c := range u.Calendars {
+	//	if c.Appointments == nil {
+	//		c.Appointments = []*Appointment{}
+	//	}
+	//}
 	return nil
 }

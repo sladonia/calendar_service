@@ -32,7 +32,7 @@ func TestAppointment_Validate(t *testing.T) {
 			fields: fields{
 				Subject:     "Meet friends",
 				Description: "just have fun",
-				CalendarId:  knownCalendarId,
+				CalendarId:  KnownCalendarId,
 				WholeDay:    false,
 			},
 			wantErr: true,
@@ -42,7 +42,7 @@ func TestAppointment_Validate(t *testing.T) {
 			fields: fields{
 				Subject:     "Meet friends",
 				Description: "just have fun",
-				CalendarId:  knownCalendarId,
+				CalendarId:  KnownCalendarId,
 				Start:       time.Date(2020, 1, 17, 20, 0, 0, 0, time.UTC),
 				WholeDay:    false,
 			},
@@ -52,7 +52,7 @@ func TestAppointment_Validate(t *testing.T) {
 			name: "success",
 			fields: fields{
 				Subject:    "to do job",
-				CalendarId: knownCalendarId,
+				CalendarId: KnownCalendarId,
 				Start:      time.Date(2020, 1, 17, 20, 0, 0, 0, time.UTC),
 				WholeDay:   true,
 			},
@@ -62,7 +62,7 @@ func TestAppointment_Validate(t *testing.T) {
 			name: "success2",
 			fields: fields{
 				Subject:    "to do another job",
-				CalendarId: knownCalendarId,
+				CalendarId: KnownCalendarId,
 				Start:      time.Date(2020, 1, 17, 20, 0, 0, 0, time.UTC),
 				End:        time.Date(2020, 1, 17, 21, 0, 0, 0, time.UTC),
 				WholeDay:   false,
@@ -73,7 +73,7 @@ func TestAppointment_Validate(t *testing.T) {
 			name: "failure time overlaps",
 			fields: fields{
 				Subject:    "to do another job",
-				CalendarId: knownCalendarId,
+				CalendarId: KnownCalendarId,
 				Start:      time.Date(2020, 1, 17, 22, 0, 0, 0, time.UTC),
 				End:        time.Date(2020, 1, 17, 21, 0, 0, 0, time.UTC),
 				WholeDay:   false,
@@ -84,7 +84,7 @@ func TestAppointment_Validate(t *testing.T) {
 			name: "failure both whole_day=true and end time provided",
 			fields: fields{
 				Subject:    "to do another job",
-				CalendarId: knownCalendarId,
+				CalendarId: KnownCalendarId,
 				Start:      time.Date(2020, 1, 17, 20, 0, 0, 0, time.UTC),
 				End:        time.Date(2020, 1, 17, 21, 0, 0, 0, time.UTC),
 				WholeDay:   true,
@@ -141,7 +141,7 @@ func TestAppointment_Create(t *testing.T) {
 			name: "success",
 			fields: fields{
 				Subject:    "to do job",
-				CalendarId: knownCalendarId,
+				CalendarId: KnownCalendarId,
 				Start:      time.Date(2020, 1, 17, 20, 0, 0, 0, time.UTC),
 				WholeDay:   true,
 			},
@@ -152,7 +152,7 @@ func TestAppointment_Create(t *testing.T) {
 			name: "failure unique index violation",
 			fields: fields{
 				Subject:    "to do job",
-				CalendarId: knownCalendarId,
+				CalendarId: KnownCalendarId,
 				Start:      time.Date(2020, 1, 17, 20, 0, 0, 0, time.UTC),
 				WholeDay:   true,
 			},
@@ -208,7 +208,7 @@ func TestAppointment_Delete(t *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				Base: Base{ID: appointmentFixedTimeId},
+				Base: Base{ID: AppointmentFixedTimeId},
 			},
 			args:    args{db: db},
 			wantErr: false,
@@ -274,10 +274,10 @@ func TestAppointment_Update(t *testing.T) {
 		{
 			name: "success",
 			fields: fields{
-				Base:        Base{ID: appointmentFixedTimeId},
+				Base:        Base{ID: AppointmentFixedTimeId},
 				Subject:     "Meet friends",
 				Description: "just have fun",
-				CalendarId:  knownCalendarId,
+				CalendarId:  KnownCalendarId,
 				Start:       time.Date(2020, 1, 17, 20, 0, 0, 0, time.UTC),
 				WholeDay:    true,
 			},
@@ -287,10 +287,10 @@ func TestAppointment_Update(t *testing.T) {
 		{
 			name: "failure violate index",
 			fields: fields{
-				Base:        Base{ID: appointmentFixedTimeId},
+				Base:        Base{ID: AppointmentFixedTimeId},
 				Subject:     "take a rest",
 				Description: "just have fun",
-				CalendarId:  knownCalendarId,
+				CalendarId:  KnownCalendarId,
 				Start:       time.Date(2020, 1, 17, 20, 0, 0, 0, time.UTC),
 				WholeDay:    true,
 			},
@@ -345,7 +345,7 @@ func TestAppointment_Read(t *testing.T) {
 	}{
 		{
 			name:    "success",
-			fields:  fields{Base: Base{ID: appointmentWholeDayId}},
+			fields:  fields{Base: Base{ID: AppointmentWholeDayId}},
 			args:    args{db: db},
 			wantErr: false,
 		},

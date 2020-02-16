@@ -70,13 +70,91 @@ func (c *calendarController) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *calendarController) Read(w http.ResponseWriter, r *http.Request) {
-	panic("implement me")
+	vars := mux.Vars(r)
+	calendarId := vars["calendar_id"]
+	ok := IsValidUUID(calendarId)
+	if !ok {
+		logger.Logger.Infof("received invalid uuid=%s", calendarId)
+		apiErr := NewBadRequestApiError("invalid uuid")
+		RespondError(w, apiErr)
+		return
+	}
+
+	resultCalendar, err := services.CalendarService.Read(calendarId)
+	if err != nil {
+		errorMsg := "unable to get calendar"
+		logger.Logger.Infow(errorMsg, "err", err.Error(), "path", r.URL.Path)
+		apiErr := NewApiError(errorMsg, err.Error(), http.StatusNotFound)
+		RespondError(w, apiErr)
+		return
+	}
+	RespondJSON(w, http.StatusOK, resultCalendar)
 }
 
 func (c *calendarController) Update(w http.ResponseWriter, r *http.Request) {
-	panic("implement me")
+	vars := mux.Vars(r)
+	calendarId := vars["calendar_id"]
+	ok := IsValidUUID(calendarId)
+	if !ok {
+		logger.Logger.Infof("received invalid uuid=%s", calendarId)
+		apiErr := NewBadRequestApiError("invalid uuid")
+		RespondError(w, apiErr)
+		return
+	}
+
+	requestBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		errorMsg := "invalid request body"
+		logger.Logger.Infow(errorMsg, "err", err.Error(), "path", r.URL.Path)
+		apiErr := NewBadRequestApiError(errorMsg)
+		RespondError(w, apiErr)
+		return
+	}
+	defer r.Body.Close()
+	var calendar models.Calendar
+	err = json.Unmarshal(requestBody, &calendar)
+	if err != nil {
+		errorMsg := "invalid json body"
+		logger.Logger.Infow(errorMsg, "err", err.Error(), "path", r.URL.Path)
+		apiErr := NewBadRequestApiError(errorMsg)
+		RespondError(w, apiErr)
+
+	}
+
+	calendar.ID = calendarId
+	resultCalendar, err := services.CalendarService.Update(calendar)
+	if err != nil {
+		errorMsg := "unable to update calendar"
+		logger.Logger.Infow(errorMsg, "err", err.Error(), "path", r.URL.Path)
+		apiErr := NewApiError(errorMsg, err.Error(), http.StatusNotFound)
+		RespondError(w, apiErr)
+		return
+	}
+	RespondJSON(w, http.StatusOK, resultCalendar)
 }
 
 func (c *calendarController) Delete(w http.ResponseWriter, r *http.Request) {
-	panic("implement me")
+	vars := mux.Vars(r)
+	calendarId := vars["calendar_id"]
+	ok := IsValidUUID(calendarId)
+	if !ok {
+		logger.Logger.Infof("received invalid uuid=%s", calendarId)
+		apiErr := NewBadRequestApiError("invalid uuid")
+		RespondError(w, apiErr)
+		return
+	}
+
+	deletedId, err := services.CalendarService.Delete(calendarId)
+	if err != nil {
+		errorMsg := "unable to delete calendar"
+		logger.Logger.Infow(errorMsg, "err", err.Error(), "path", r.URL.Path)
+		apiErr := NewApiError(errorMsg, err.Error(), http.StatusNotFound)
+		RespondError(w, apiErr)
+		return
+	}
+	response := models.ResponseDeleted{
+		Message:   "calendar deleted",
+		DeletedId: deletedId,
+	}
+	RespondJSON(w, http.StatusAccepted, response)
 }
