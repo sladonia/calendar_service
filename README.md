@@ -61,6 +61,7 @@ make docker_build
 
 * build services
 ```sh
+make build
 docker-compose build postgres calendar
 ```
 
