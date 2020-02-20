@@ -42,7 +42,6 @@ func InitApp() http.Handler {
 	r.NotFoundHandler = &controllers.NotFoundHandler{}
 	r.HandleFunc("/", controllers.RootController.Get)
 
-	// user
 	r.HandleFunc("/user", controllers.UserController.Create).Methods("POST")
 	r.HandleFunc("/user/{id}", controllers.UserController.Read).Methods("GET")
 	r.HandleFunc("/user/{id}", controllers.UserController.Delete).Methods("DELETE")
@@ -55,6 +54,8 @@ func InitApp() http.Handler {
 	r.HandleFunc("/appointment/{appointment_id}", controllers.AppointmentController.Read).Methods("GET")
 	r.HandleFunc("/appointment/{appointment_id}", controllers.AppointmentController.Update).Methods("POST")
 	r.HandleFunc("/appointment/{appointment_id}", controllers.AppointmentController.Delete).Methods("DELETE")
+	r.HandleFunc("/appointment/{appointment_id}/add-attendees", controllers.AppointmentController.AddAttendees).Methods("POST")
+	r.HandleFunc("/appointment/{appointment_id}/remove-attendees", controllers.AppointmentController.RemoveAttendees).Methods("POST")
 
 	r.Use(logging_middlewaer.LoggingMw)
 

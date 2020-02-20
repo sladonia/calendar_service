@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"strings"
 	"time"
@@ -14,20 +15,20 @@ type Appointment struct {
 	WholeDay    bool      `json:"whole_day"`
 	Start       time.Time `json:"start"`
 	End         time.Time `json:"end"`
-	Users       []User    `gorm:"many2many:users_appointments;" json:"users"`
+	Attendees   []*User   `gorm:"many2many:users_appointments;" json:"attendees"`
 	CalendarId  string    `gorm:"type:uuid;not null;" json:"calendar_id"`
 }
 
 func (a *Appointment) AfterFind() (err error) {
-	if a.Users == nil {
-		a.Users = []User{}
+	if a.Attendees == nil {
+		a.Attendees = []*User{}
 	}
 	return
 }
 
 func (a *Appointment) AfterUpdate() (err error) {
-	if a.Users == nil {
-		a.Users = []User{}
+	if a.Attendees == nil {
+		a.Attendees = []*User{}
 	}
 	return
 }
@@ -95,8 +96,8 @@ func (a *Appointment) Update(db *gorm.DB) error {
 	if dbState.RowsAffected == 0 {
 		return NewModeError(fmt.Sprintf("appointment with id=%s not present in the db", a.ID))
 	}
-	if a.Users == nil {
-		a.Users = []User{}
+	if a.Attendees == nil {
+		a.Attendees = []*User{}
 	}
 	return nil
 }
@@ -105,12 +106,40 @@ func (a *Appointment) Read(db *gorm.DB) error {
 	if a.EmptyID() {
 		return EmptyIdError
 	}
-	dbState := db.Find(a, "id = ?", a.ID)
+	dbState := db.Preload("Attendees").Find(a, "id = ?", a.ID)
 	if dbState.Error != nil {
 		return dbState.Error
 	}
 	if dbState.RowsAffected == 0 {
 		return NewModeError(fmt.Sprintf("appointment with with id=%s not present in the db", a.ID))
+	}
+	return nil
+}
+
+func (a *Appointment) AddAttendees(userIds []string, db *gorm.DB) error {
+	usrs := make([]*User, 0, 2)
+	for _, userId := range userIds {
+		_, err := uuid.Parse(userId)
+		if err != nil {
+			return err
+		}
+		usrs = append(usrs, &User{Base: Base{ID: userId}})
+	}
+	return db.Model(a).Association("Attendees").Append(usrs).Error
+}
+
+func (a *Appointment) RemoveAttendees(userIds []string, db *gorm.DB) error {
+	usrs := make([]*User, 0, 2)
+	for _, userId := range userIds {
+		_, err := uuid.Parse(userId)
+		if err != nil {
+			return err
+		}
+		usrs = append(usrs, &User{Base: Base{ID: userId}})
+	}
+	res := db.Model(a).Association("Attendees").Delete(usrs)
+	if res.Error != nil {
+		return res.Error
 	}
 	return nil
 }

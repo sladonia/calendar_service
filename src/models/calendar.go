@@ -66,9 +66,6 @@ func (c *Calendar) Update(db *gorm.DB) error {
 	if dbState.RowsAffected == 0 {
 		return NewModeError(fmt.Sprintf("calendar with id=%s not present in the db", c.ID))
 	}
-	//if c.Appointments == nil {
-	//	c.Appointments = []*Appointment{}
-	//}
 	return nil
 }
 
@@ -83,8 +80,5 @@ func (c *Calendar) Read(db *gorm.DB) error {
 	if dbState.RowsAffected == 0 {
 		return NewModeError(fmt.Sprintf("calendar with id=%s not present in the db", c.ID))
 	}
-	//if c.Appointments == nil {
-	//	c.Appointments = []*Appointment{}
-	//}
 	return nil
 }

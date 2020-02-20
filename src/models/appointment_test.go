@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
@@ -20,7 +21,7 @@ func TestAppointment_Validate(t *testing.T) {
 		Start       time.Time
 		End         time.Time
 		WholeDay    bool
-		Users       []User
+		Users       []*User
 	}
 	tests := []struct {
 		name    string
@@ -102,7 +103,7 @@ func TestAppointment_Validate(t *testing.T) {
 				Start:       tt.fields.Start,
 				End:         tt.fields.End,
 				WholeDay:    tt.fields.WholeDay,
-				Users:       tt.fields.Users,
+				Attendees:   tt.fields.Users,
 			}
 			if err := a.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
@@ -126,7 +127,7 @@ func TestAppointment_Create(t *testing.T) {
 		Start       time.Time
 		End         time.Time
 		WholeDay    bool
-		Users       []User
+		Users       []*User
 	}
 	type args struct {
 		db *gorm.DB
@@ -170,7 +171,7 @@ func TestAppointment_Create(t *testing.T) {
 				Start:       tt.fields.Start,
 				End:         tt.fields.End,
 				WholeDay:    tt.fields.WholeDay,
-				Users:       tt.fields.Users,
+				Attendees:   tt.fields.Users,
 			}
 			if err := a.Create(tt.args.db); (err != nil) != tt.wantErr {
 				t.Errorf("Create() error = %v, wantErr %v", err, tt.wantErr)
@@ -194,7 +195,7 @@ func TestAppointment_Delete(t *testing.T) {
 		Start       time.Time
 		End         time.Time
 		WholeDay    bool
-		Users       []User
+		Users       []*User
 	}
 	type args struct {
 		db *gorm.DB
@@ -236,7 +237,7 @@ func TestAppointment_Delete(t *testing.T) {
 				Start:       tt.fields.Start,
 				End:         tt.fields.End,
 				WholeDay:    tt.fields.WholeDay,
-				Users:       tt.fields.Users,
+				Attendees:   tt.fields.Users,
 			}
 			if err := a.Delete(tt.args.db); (err != nil) != tt.wantErr {
 				t.Errorf("Delete() error = %v, wantErr %v", err, tt.wantErr)
@@ -260,7 +261,7 @@ func TestAppointment_Update(t *testing.T) {
 		Start       time.Time
 		End         time.Time
 		WholeDay    bool
-		Users       []User
+		Users       []*User
 	}
 	type args struct {
 		db *gorm.DB
@@ -308,7 +309,7 @@ func TestAppointment_Update(t *testing.T) {
 				Start:       tt.fields.Start,
 				End:         tt.fields.End,
 				WholeDay:    tt.fields.WholeDay,
-				Users:       tt.fields.Users,
+				Attendees:   tt.fields.Users,
 			}
 			if err := a.Update(tt.args.db); (err != nil) != tt.wantErr {
 				t.Errorf("Update() error = %v, wantErr %v", err, tt.wantErr)
@@ -332,7 +333,7 @@ func TestAppointment_Read(t *testing.T) {
 		Start       time.Time
 		End         time.Time
 		WholeDay    bool
-		Users       []User
+		Users       []*User
 	}
 	type args struct {
 		db *gorm.DB
@@ -366,11 +367,70 @@ func TestAppointment_Read(t *testing.T) {
 				Start:       tt.fields.Start,
 				End:         tt.fields.End,
 				WholeDay:    tt.fields.WholeDay,
-				Users:       tt.fields.Users,
+				Attendees:   tt.fields.Users,
 			}
 			if err := a.Read(tt.args.db); (err != nil) != tt.wantErr {
 				t.Errorf("Read() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
+}
+
+func TestAppointment_AddAttendees(t *testing.T) {
+	err := MockDbData(db)
+	if err != nil {
+		t.Fatal("unable to mock db")
+	}
+	defer DropAllData(db)
+
+	t.Run("success", func(tt *testing.T) {
+		userIds := []string{KnownUserId, SecondKnownUserId}
+		apt := &Appointment{Base: Base{ID: AppointmentWholeDayId}}
+		err := apt.AddAttendees(userIds, db)
+		assert.Nil(tt, err)
+		assert.Len(tt, apt.Attendees, 2)
+	})
+
+	t.Run("fail unexisting appointment id", func(tt *testing.T) {
+		userIds := []string{KnownUserId, SecondKnownUserId}
+		apt := &Appointment{Base: Base{ID: UnexistingId}}
+		err := apt.AddAttendees(userIds, db)
+		assert.NotNil(tt, err)
+	})
+
+	t.Run("fail unexisting user ids", func(tt *testing.T) {
+		userIds := []string{UnexistingId}
+		apt := &Appointment{Base: Base{ID: UnexistingId}}
+		err := apt.AddAttendees(userIds, db)
+		assert.NotNil(tt, err)
+	})
+
+	t.Run("fail invalid user ids", func(tt *testing.T) {
+		userIds := []string{"ha-ha-ha"}
+		apt := &Appointment{Base: Base{ID: UnexistingId}}
+		err := apt.AddAttendees(userIds, db)
+		assert.NotNil(tt, err)
+	})
+}
+
+func TestAppointment_RemoveAttendees(t *testing.T) {
+	err := MockDbData(db)
+	if err != nil {
+		t.Fatal("unable to mock db")
+	}
+	defer DropAllData(db)
+
+	t.Run("success", func(tt *testing.T) {
+		appt := &Appointment{Base: Base{ID: AppointmentWholeDayId}}
+		err := appt.RemoveAttendees([]string{ThirdKnownUserId}, db)
+		assert.Nil(tt, err)
+		assert.Len(tt, appt.Attendees, 0)
+	})
+
+	t.Run("success remove unexisting user id", func(tt *testing.T) {
+		appt := &Appointment{Base: Base{ID: AppointmentWholeDayId}}
+		err := appt.RemoveAttendees([]string{UnexistingId}, db)
+		assert.Nil(tt, err)
+		assert.Len(tt, appt.Attendees, 0)
+	})
 }

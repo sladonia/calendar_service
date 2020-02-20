@@ -19,6 +19,8 @@ type AppointmentControllerInterface interface {
 	Read(w http.ResponseWriter, r *http.Request)
 	Update(w http.ResponseWriter, r *http.Request)
 	Delete(w http.ResponseWriter, r *http.Request)
+	AddAttendees(w http.ResponseWriter, r *http.Request)
+	RemoveAttendees(w http.ResponseWriter, r *http.Request)
 }
 
 type appointmentController struct{}
@@ -156,4 +158,88 @@ func (a *appointmentController) Delete(w http.ResponseWriter, r *http.Request) {
 		DeletedId: deletedId,
 	}
 	RespondJSON(w, http.StatusAccepted, response)
+}
+
+func (a *appointmentController) AddAttendees(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	apptId := vars["appointment_id"]
+	ok := IsValidUUID(apptId)
+	if !ok {
+		logger.Logger.Infof("received invalid uuid=%s", apptId)
+		apiErr := NewBadRequestApiError("invalid uuid")
+		RespondError(w, apiErr)
+		return
+	}
+	requestBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		errorMsg := "invalid request body"
+		logger.Logger.Infow(errorMsg, "err", err.Error(), "path", r.URL.Path)
+		apiErr := NewBadRequestApiError(errorMsg)
+		RespondError(w, apiErr)
+		return
+	}
+	defer r.Body.Close()
+
+	var attendees []string
+	err = json.Unmarshal(requestBody, &attendees)
+	if err != nil {
+		errorMsg := "invalid json body"
+		logger.Logger.Infow(errorMsg, "err", err.Error(), "path", r.URL.Path)
+		apiErr := NewBadRequestApiError(errorMsg)
+		RespondError(w, apiErr)
+		return
+	}
+
+	appt := models.Appointment{Base: models.Base{ID: apptId}}
+	resultAppt, err := services.AppointmentService.AddAttendees(appt, attendees)
+	if err != nil {
+		errorMsg := "unable to add attendees to appointment"
+		logger.Logger.Infow(errorMsg, "err", err.Error(), "path", r.URL.Path)
+		apiErr := NewApiError(errorMsg, err.Error(), http.StatusNotFound)
+		RespondError(w, apiErr)
+		return
+	}
+	RespondJSON(w, http.StatusOK, resultAppt)
+}
+
+func (a *appointmentController) RemoveAttendees(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	apptId := vars["appointment_id"]
+	ok := IsValidUUID(apptId)
+	if !ok {
+		logger.Logger.Infof("received invalid uuid=%s", apptId)
+		apiErr := NewBadRequestApiError("invalid uuid")
+		RespondError(w, apiErr)
+		return
+	}
+	requestBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		errorMsg := "invalid request body"
+		logger.Logger.Infow(errorMsg, "err", err.Error(), "path", r.URL.Path)
+		apiErr := NewBadRequestApiError(errorMsg)
+		RespondError(w, apiErr)
+		return
+	}
+	defer r.Body.Close()
+
+	var attendees []string
+	err = json.Unmarshal(requestBody, &attendees)
+	if err != nil {
+		errorMsg := "invalid json body"
+		logger.Logger.Infow(errorMsg, "err", err.Error(), "path", r.URL.Path)
+		apiErr := NewBadRequestApiError(errorMsg)
+		RespondError(w, apiErr)
+		return
+	}
+
+	appt := models.Appointment{Base: models.Base{ID: apptId}}
+	resultAppt, err := services.AppointmentService.RemoveAttendees(appt, attendees)
+	if err != nil {
+		errorMsg := "unable to remove attendees from appointment"
+		logger.Logger.Infow(errorMsg, "err", err.Error(), "path", r.URL.Path)
+		apiErr := NewApiError(errorMsg, err.Error(), http.StatusNotFound)
+		RespondError(w, apiErr)
+		return
+	}
+	RespondJSON(w, http.StatusOK, resultAppt)
 }

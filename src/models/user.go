@@ -91,9 +91,6 @@ func (u *User) Update(db *gorm.DB) error {
 	if dbState.RowsAffected == 0 {
 		return NewModeError(fmt.Sprintf("user with id=%s not present in the db", u.ID))
 	}
-	//if u.Appointments == nil {
-	//	u.Appointments = []*Appointment{}
-	//}
 	return nil
 }
 
@@ -101,7 +98,7 @@ func (u *User) Read(db *gorm.DB) error {
 	if u.EmptyID() {
 		return EmptyIdError
 	}
-	dbState := db.Preload("Calendars").Find(u, "id = ?", u.ID)
+	dbState := db.Preload("Calendars").Preload("Appointments").Find(u, "id = ?", u.ID)
 	if dbState.Error != nil {
 		return dbState.Error
 	}
@@ -111,10 +108,5 @@ func (u *User) Read(db *gorm.DB) error {
 	if u.Appointments == nil {
 		u.Appointments = []*Appointment{}
 	}
-	//for _, c := range u.Calendars {
-	//	if c.Appointments == nil {
-	//		c.Appointments = []*Appointment{}
-	//	}
-	//}
 	return nil
 }

@@ -36,6 +36,8 @@ func InitIndexes(db *gorm.DB) {
 	db.Model(&User{}).AddUniqueIndex("idx_user_first_last_name_unique", "first_name", "last_name")
 	db.Model(&Calendar{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
 	db.Model(&Appointment{}).AddForeignKey("calendar_id", "calendars(id)", "CASCADE", "CASCADE")
+	db.Table("users_appointments").AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	db.Table("users_appointments").AddForeignKey("appointment_id", "appointments(id)", "CASCADE", "CASCADE")
 	db.Model(&Appointment{}).AddUniqueIndex("idx_calendar_id_subject_unique", "calendar_id", "subject")
 }
 
