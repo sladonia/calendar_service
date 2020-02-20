@@ -6,11 +6,9 @@ import (
 	"time"
 )
 
-var connectString = "user=user password=password dbname=calendar_development sslmode=disable"
-
-func InitDbConnection(user, password, dbname, sslmode string, maxOpenConn, maxIdleConn, connTimeout int) (*gorm.DB, error) {
-	connectString := fmt.Sprintf("user=%s password=%s dbname=%s sslmode=%s",
-		user, password, dbname, sslmode)
+func InitDbConnection(host, port, user, password, dbname, sslmode string, maxOpenConn, maxIdleConn, connTimeout int) (*gorm.DB, error) {
+	connectString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		host, port, user, password, dbname, sslmode)
 	db, err := gorm.Open("postgres", connectString)
 	if err != nil {
 		return nil, err

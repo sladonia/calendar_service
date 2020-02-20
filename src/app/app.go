@@ -22,6 +22,8 @@ func ConfigureApp() error {
 
 	var err error
 	calendardb.DB, err = models.InitDbConnection(
+		config.Config.CalendarDb.Host,
+		config.Config.CalendarDb.Port,
 		config.Config.CalendarDb.User,
 		config.Config.CalendarDb.Password,
 		config.Config.CalendarDb.DbName,

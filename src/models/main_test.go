@@ -26,6 +26,8 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	db, err = InitDbConnection(
+		config.Config.CalendarDb.Host,
+		config.Config.CalendarDb.Port,
 		config.Config.CalendarDb.User,
 		config.Config.CalendarDb.Password,
 		config.Config.CalendarDb.DbName,
